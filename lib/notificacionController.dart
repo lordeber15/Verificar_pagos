@@ -4,8 +4,12 @@ import 'package:notification_listener_service/notification_event.dart';
 import 'package:notification_listener_service/notification_listener_service.dart';
 
 class SMSController extends GetxController {
-  RxList notificationList = RxList<ServiceNotificationEvent>();
+  RxList<ServiceNotificationEvent> notificationList =
+      <ServiceNotificationEvent>[].obs;
+  RxBool isListening = false.obs;
+  RxBool hasPermission = false.obs;
 
+  final String targetPackage = "com.bcp.innovacxion.yapeapp";
   @override
   void onInit() {
     super.onInit();
@@ -13,14 +17,18 @@ class SMSController extends GetxController {
   }
 
   void requestForPermission() async {
-    log("Solicitando Permisos");
+    log("Verificando permisos...");
     final bool status = await NotificationListenerService.isPermissionGranted();
-    if (status != true) {
-      log("sin Permisos");
-      final bool statuss =
+    hasPermission.value = status;
+
+    if (!status) {
+      log("Sin permisos. Solicitando...");
+      final bool granted =
           await NotificationListenerService.requestPermission();
-      listenNotification();
-      log(statuss.toString());
+      hasPermission.value = granted;
+      log("Permiso otorgado: $granted");
+    } else {
+      log("Ya se tienen los permisos");
     }
   }
 
@@ -30,5 +38,30 @@ class SMSController extends GetxController {
       log("Estado Actual de notificaciones: $event");
       notificationList.add(event);
     });
+  }
+
+  void startListening() {
+    if (!isListening.value) {
+      isListening.value = true;
+      NotificationListenerService.notificationsStream.listen((event) {
+        if (event.packageName == targetPackage) {
+          notificationList.add(event);
+        }
+      });
+    }
+  }
+
+  void stopListening() {
+    isListening.value = false;
+    // Nota: No hay una forma directa de "cerrar" el stream, pero usamos el flag `isListening`
+    // si decides mejorar esto con stream control más adelante.
+  }
+
+  void toggleListening() {
+    if (isListening.value) {
+      stopListening();
+    } else {
+      startListening();
+    }
   }
 }
