@@ -9,7 +9,7 @@ class SMSController extends GetxController {
   RxBool isListening = false.obs;
   RxBool hasPermission = false.obs;
 
-  final String targetPackage = "com.bcp.innovacxion.yapeapp";
+  final String targetPackage = "org.telegram.messenger";
   @override
   void onInit() {
     super.onInit();
