@@ -9,7 +9,9 @@ class SMSController extends GetxController {
   RxBool isListening = false.obs;
   RxBool hasPermission = false.obs;
 
-  final String targetPackage = "org.telegram.messenger";
+  final String targetPackage = "com.bcp.innovacxion.yapeapp";
+  final String apiUrl = "https://backend-verificador.onrender.com/notification";
+
   @override
   void onInit() {
     super.onInit();
@@ -35,8 +37,9 @@ class SMSController extends GetxController {
   void listenNotification() async {
     log("Escuchando mensajes");
     NotificationListenerService.notificationsStream.listen((event) {
-      log("Estado Actual de notificaciones: $event");
-      notificationList.add(event);
+      if (event.packageName == targetPackage) {
+        notificationList.add(event);
+      }
     });
   }
 
@@ -51,17 +54,13 @@ class SMSController extends GetxController {
     }
   }
 
+  void toggleListening() {
+    isListening.value = !isListening.value;
+  }
+
   void stopListening() {
     isListening.value = false;
     // Nota: No hay una forma directa de "cerrar" el stream, pero usamos el flag `isListening`
     // si decides mejorar esto con stream control más adelante.
-  }
-
-  void toggleListening() {
-    if (isListening.value) {
-      stopListening();
-    } else {
-      startListening();
-    }
   }
 }
