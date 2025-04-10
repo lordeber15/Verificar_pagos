@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:yape_listener/notificacionController.dart';
 import "package:get/get.dart";
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -12,14 +14,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
+    return WithForegroundTask(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
 
-      title: 'Verificar Yapes',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        title: 'Verificar Yapes',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: const MyHomePage(title: 'Notificaciones yape'),
       ),
-      home: const MyHomePage(title: 'Notificaciones yape'),
     );
   }
 }
@@ -100,27 +104,34 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           SizedBox(height: 20),
-          Text("Todas las Notificaciones"),
+          Text(
+            "Notificaciones desde la API",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           Obx(
             () => Column(
               children:
-                  smsController.notificationList
+                  smsController.apiNotificationList
                       .map(
-                        (e) => Container(
-                          color: Colors.deepPurple.withValues(alpha: 0.2),
+                        (data) => Container(
                           margin: EdgeInsets.symmetric(vertical: 5),
                           padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent.withValues(alpha: 0.2),
+                            border: Border.all(color: Colors.green),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${e.title}",
+                                "🔔 ${data['title'] ?? 'Sin título'}",
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              Divider(),
-                              ...segmentContent(
-                                e.content.toString(),
-                              ).map((line) => Text(line)),
+                              Text("👤 ${data['nombre']}"),
+                              Text("💰 S/ ${data['monto']}"),
+                              Text("🔐 Código: ${data['codigoseg']}"),
+                              Text("📦 ${data['packageName']}"),
                             ],
                           ),
                         ),
