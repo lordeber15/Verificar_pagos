@@ -11,18 +11,19 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return WithForegroundTask(
+      // Esto asegura que el servicio de primer plano esté disponible
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-
         title: 'Verificar Yapes',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: const MyHomePage(title: 'Notificaciones yape'),
+        home: const MyHomePage(
+          title: 'Notificaciones Yape',
+        ), // Pantalla principal
       ),
     );
   }
@@ -30,7 +31,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -39,7 +39,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<String> segmentContent(String content) {
-    // Puedes personalizar esto según el formato de los mensajes de Yape
+    // Personaliza la segmentación de los mensajes de Yape
     return content.split('\n');
   }
 
@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           margin: EdgeInsets.symmetric(vertical: 5),
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.greenAccent.withValues(alpha: 0.2),
+                            color: Colors.greenAccent.withOpacity(0.2),
                             border: Border.all(color: Colors.green),
                             borderRadius: BorderRadius.circular(8),
                           ),
